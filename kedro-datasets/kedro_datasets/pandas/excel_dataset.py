@@ -263,6 +263,9 @@ class ExcelDataset(
         """
         Generate a preview of the dataset with a specified number of rows.
 
+        When ``load_args`` selects several sheets (for example ``sheet_name: None``
+        or a list of sheet names), the preview shows the first of the loaded sheets.
+
         Args:
             nrows: The number of rows to include in the preview. Defaults to 5.
 
@@ -273,5 +276,8 @@ class ExcelDataset(
         dataset_copy = self._copy()
         dataset_copy._load_args["nrows"] = nrows  # type: ignore[attr-defined]
         data = dataset_copy.load()
+
+        if isinstance(data, dict):
+            data = next(iter(data.values()), pd.DataFrame())
 
         return data.to_dict(orient="split")

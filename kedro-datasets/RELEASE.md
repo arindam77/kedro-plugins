@@ -2,7 +2,12 @@
 ## Major features and improvements
 ## Breaking changes
 ## Bug fixes and other changes
+
+- Fixed `pandas.ExcelDataset.preview()` failing with `AttributeError` when `load_args` selects several sheets (`sheet_name: None` or a list); the preview now shows the first loaded sheet.
+
 ## Community contributions
+
+- [Arindam Mukherjee](https://github.com/arindam77)
 
 
 # Release 10.0.0

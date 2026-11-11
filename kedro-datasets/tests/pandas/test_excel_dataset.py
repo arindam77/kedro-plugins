@@ -167,6 +167,37 @@ class TestExcelDataset:
             inspect.signature(excel_dataset.preview).return_annotation == "TablePreview"
         )
 
+    def test_preview_multiple_sheets(
+        self, excel_multisheet_dataset, dummy_dataframe, another_dummy_dataframe
+    ):
+        """Test preview shows the first sheet when several sheets are loaded."""
+        excel_multisheet_dataset.save(
+            {"sheet 1": dummy_dataframe, "sheet 2": another_dummy_dataframe}
+        )
+        previewed = excel_multisheet_dataset.preview(nrows=1)
+        assert previewed == {
+            "index": [0],
+            "columns": ["col1", "col2", "col3"],
+            "data": [[1, 4, 5]],
+        }
+
+    def test_preview_list_of_sheets(
+        self, filepath_excel, dummy_dataframe, another_dummy_dataframe
+    ):
+        """Test preview when ``sheet_name`` is a list of sheet names."""
+        ExcelDataset(filepath=filepath_excel).save(
+            {"sheet 1": dummy_dataframe, "sheet 2": another_dummy_dataframe}
+        )
+        dataset = ExcelDataset(
+            filepath=filepath_excel, load_args={"sheet_name": ["sheet 2"]}
+        )
+        previewed = dataset.preview(nrows=1)
+        assert previewed == {
+            "index": [0],
+            "columns": ["x", "y"],
+            "data": [[10, "hello"]],
+        }
+
     def test_load_missing_file(self, excel_dataset):
         """Check the error when trying to load missing file."""
         pattern = r"Failed while loading data from dataset kedro_datasets.pandas.excel_dataset.ExcelDataset\(.*\)"
